@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "test": "node --test",
     "build": "vite build",
     "postbuild": "node scripts/spa-fallback.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:article-layout": "node article-navigation-check.mjs"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "5.3.0",

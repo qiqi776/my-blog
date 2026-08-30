@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -38,6 +38,7 @@ export default function MiniPlayer() {
   } = useAudioPlayer();
 
   const [expanded, setExpanded] = useState(false);
+  const playerRef = useRef(null);
 
   const onHome = pathname === "/";
   const visible = !onHome && hasTracks;
@@ -46,18 +47,27 @@ export default function MiniPlayer() {
   // 条目，那几个链接直接点不到。所以把它占用的高度作为一个全局变量公布
   // 出去，由目录和页脚各自让出空间；不显示时移除变量，首页不会凭空多出
   // 一截留白。
-  useEffect(() => {
+  useLayoutEffect(() => {
     const root = document.documentElement;
-    if (!visible) {
+    const player = playerRef.current;
+    if (!visible || !player) {
       root.style.removeProperty("--mini-player-reserve");
-      return;
+      return undefined;
     }
-    // 必须写成 px：目录那边要用 parseFloat 把这个值读回来算高度，
-    // parseFloat("5.5rem") 得到的是 5.5，等于白让。换算成 px 之后
-    // CSS calc 和 JS 读数才是同一个数。
-    const rootFontSize = parseFloat(getComputedStyle(root).fontSize) || 16;
-    root.style.setProperty("--mini-player-reserve", `${5.5 * rootFontSize}px`);
-    return () => root.style.removeProperty("--mini-player-reserve");
+
+    const publishHeight = () => {
+      root.style.setProperty("--mini-player-reserve", `${player.offsetHeight}px`);
+    };
+    const observer = new ResizeObserver(publishHeight);
+    observer.observe(player);
+    publishHeight();
+    window.addEventListener("resize", publishHeight);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", publishHeight);
+      root.style.removeProperty("--mini-player-reserve");
+    };
   }, [visible]);
 
   // 回到首页时收起。展开态留着的话，下次离开首页会突然弹出一个大卡片，
@@ -75,6 +85,7 @@ export default function MiniPlayer() {
     <AnimatePresence>
       {visible && (
       <motion.aside
+        ref={playerRef}
         key="mini-player"
         initial={{ opacity: 0, y: 24, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
