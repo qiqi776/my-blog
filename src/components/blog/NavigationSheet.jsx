@@ -65,7 +65,7 @@ export default function NavigationSheet({ open, onClose, title, triggerRef, chil
       document.body.style.overflow = previousOverflow;
       const focusTarget = returnFocus?.isConnected && returnFocus.getClientRects().length
         ? returnFocus
-        : document.querySelector('.post-back-link');
+        : triggerRef?.current;
       focusTarget?.focus?.({ preventScroll: true });
     };
   }, [onClose, open, triggerRef]);

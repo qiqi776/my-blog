@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  GitBranch,
   FileText,
   Disc3,
   Play,
@@ -328,6 +327,7 @@ function TagCloud() {
       <div className="flex flex-wrap items-baseline gap-x-3.5 gap-y-3">
         {CLOUD.map((c, i) => {
           const step = cloudStep(c.count);
+          const latestPost = posts.find((post) => post.category === c.id);
           return (
             <motion.span
               key={c.id}
@@ -337,7 +337,7 @@ function TagCloud() {
               transition={{ duration: 0.3, delay: 0.035 * i }}
             >
               <Link
-                to={`/posts?cat=${encodeURIComponent(c.id)}`}
+                to={latestPost ? `/posts/${latestPost.slug.split('/').map(encodeURIComponent).join('/')}` : '/archive'}
                 className={`${CLOUD_STEPS[step]} font-bold leading-none text-[var(--text-heading)] hover:!opacity-100 hover:text-[var(--color-primary)] transition-all duration-200`}
                 style={{ opacity: cloudOpacity(step) }}
               >
@@ -393,11 +393,11 @@ function WritingPulse() {
   const inWindow = months.reduce((s, m) => s + m.count, 0);
 
   return (
-    // 3deg against the other two cards' 4, matching About's skills panel: this
-    // is the widest card on the page, and a given angle over a longer edge
-    // sweeps the far corner much further. It is also the only card whose
-    // content is quantitative — tilting shears the bars, so comparing two
-    // months' heights gets harder the further it rotates.
+    // 3deg against the other two cards' 4: this is the widest card on the
+    // page, and a given angle over a longer edge sweeps the far corner much
+    // further. It is also the only card whose content is quantitative —
+    // tilting shears the bars, so comparing two months' heights gets harder
+    // the further it rotates.
     <Card
       icon={PenLine}
       title="写作节奏"
@@ -471,6 +471,8 @@ function WritingPulse() {
 // The three entry buttons are the only navigation the page offers, so they
 // stay — without them the homepage is a dead end.
 export default function Home() {
+  const latestPost = posts[0] ?? null;
+
   return (
     <>
       <Glow />
@@ -522,7 +524,7 @@ export default function Home() {
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="flex flex-wrap items-center justify-center gap-3 pt-2"
         >
-          <Link to="/posts">
+          <Link to={latestPost ? `/posts/${latestPost.slug.split('/').map(encodeURIComponent).join('/')}` : '/archive'}>
             <button className="btn-primary group flex items-center gap-2 text-base md:text-lg font-semibold !px-6 !py-3 !rounded-full">
               <FileText size={15} />
               开始阅读
@@ -544,16 +546,6 @@ export default function Home() {
             </button>
           </Link>
 
-          <Link to="/about">
-            <button className="group flex items-center gap-2 px-6 py-3 rounded-full text-base md:text-lg font-semibold text-[var(--text-body)] border border-white/25 hover:border-[var(--color-primary)]/50 hover:bg-white/10 transition-all duration-200">
-              <GitBranch size={15} />
-              关于我
-              <ArrowRight
-                size={14}
-                className="opacity-0 -ml-1 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200"
-              />
-            </button>
-          </Link>
         </motion.div>
       </div>
     </>

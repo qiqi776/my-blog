@@ -19,10 +19,10 @@ const post = (slug, overrides = {}) => ({
 const slugs = (posts) => posts.map(({ slug }) => slug);
 
 test('groups category roots and second-level directories into one visible sequence', () => {
-  const overview = post('network/overview', { title: '网络概览', categoryLabel: '计算机网络' });
-  const ch01 = post('network/408/ch01', { title: '第一章', categoryLabel: '计算机网络' });
-  const ch02 = post('network/408/ch02', { title: '第二章', categoryLabel: '计算机网络' });
-  const tcpip = post('network/tcpip/ch03', { title: 'TCP/IP 第三章', categoryLabel: '计算机网络' });
+  const overview = post('backend/overview', { title: '概览', category: 'backend', categoryLabel: '后端' });
+  const ch01 = post('backend/408/ch01', { title: '第一章', category: 'backend', categoryLabel: '后端' });
+  const ch02 = post('backend/408/ch02', { title: '第二章', category: 'backend', categoryLabel: '后端' });
+  const tcpip = post('backend/tcpip/ch03', { title: 'TCP/IP 第三章', category: 'backend', categoryLabel: '后端' });
   const go = post('go/concurrency', { title: 'Go Concurrency', categoryLabel: 'Go' });
 
   const navigation = buildSeriesNavigation(
@@ -30,9 +30,9 @@ test('groups category roots and second-level directories into one visible sequen
     ch02,
   );
 
-  assert.equal(navigation.category, 'network');
-  assert.equal(navigation.categoryLabel, '计算机网络');
-  assert.deepEqual(slugs(navigation.rootItems), ['network/overview']);
+  assert.equal(navigation.category, 'backend');
+  assert.equal(navigation.categoryLabel, '后端');
+  assert.deepEqual(slugs(navigation.rootItems), ['backend/overview']);
   assert.deepEqual(
     navigation.groups.map(({ id, label }) => ({ id, label })),
     [
@@ -43,15 +43,15 @@ test('groups category roots and second-level directories into one visible sequen
   assert.deepEqual(
     navigation.groups.map(({ id, items }) => [id, slugs(items)]),
     [
-      ['408', ['network/408/ch01', 'network/408/ch02']],
-      ['tcpip', ['network/tcpip/ch03']],
+      ['408', ['backend/408/ch01', 'backend/408/ch02']],
+      ['tcpip', ['backend/tcpip/ch03']],
     ],
   );
   assert.deepEqual(slugs(navigation.sequence), [
-    'network/overview',
-    'network/408/ch01',
-    'network/408/ch02',
-    'network/tcpip/ch03',
+    'backend/overview',
+    'backend/408/ch01',
+    'backend/408/ch02',
+    'backend/tcpip/ch03',
   ]);
   assert.equal(navigation.currentGroupId, '408');
   assert.equal(navigation.currentIndex, 2);
@@ -63,35 +63,35 @@ test('groups category roots and second-level directories into one visible sequen
 
 test('orders explicit positions, numbered basenames, then dated posts with stable fallbacks', () => {
   const candidates = [
-    post('network/reference', { title: '乙', date: '2026-03-01' }),
-    post('network/ch10', { title: 'Chapter 10', date: '2026-05-01' }),
-    post('network/z-explicit', { title: 'Z', order: 2 }),
-    post('network/ch2', { title: 'Chapter 2', date: '2026-01-01' }),
-    post('network/a-explicit', { title: 'A', order: 2 }),
-    post('network/guide-z', { title: '甲', date: '2026-03-01' }),
-    post('network/guide-a', { title: '甲', date: '2026-03-01' }),
-    post('network/ignored-sentinel', { title: '丙', date: '2026-04-01', order: 999 }),
-    post('network/non-finite', { title: '丁', date: '2026-06-01', order: Infinity }),
-    post('network/first', { title: 'First', order: 1 }),
+    post('backend/reference', { title: '乙', date: '2026-03-01', category: 'backend' }),
+    post('backend/ch10', { title: 'Chapter 10', date: '2026-05-01', category: 'backend' }),
+    post('backend/z-explicit', { title: 'Z', order: 2, category: 'backend' }),
+    post('backend/ch2', { title: 'Chapter 2', date: '2026-01-01', category: 'backend' }),
+    post('backend/a-explicit', { title: 'A', order: 2, category: 'backend' }),
+    post('backend/guide-z', { title: '甲', date: '2026-03-01', category: 'backend' }),
+    post('backend/guide-a', { title: '甲', date: '2026-03-01', category: 'backend' }),
+    post('backend/ignored-sentinel', { title: '丙', date: '2026-04-01', order: 999, category: 'backend' }),
+    post('backend/non-finite', { title: '丁', date: '2026-06-01', order: Infinity, category: 'backend' }),
+    post('backend/first', { title: 'First', order: 1, category: 'backend' }),
   ];
 
   assert.deepEqual(slugs(candidates.sort(compareSeriesPosts)), [
-    'network/first',
-    'network/a-explicit',
-    'network/z-explicit',
-    'network/ch2',
-    'network/ch10',
-    'network/non-finite',
-    'network/ignored-sentinel',
-    'network/guide-a',
-    'network/guide-z',
-    'network/reference',
+    'backend/first',
+    'backend/a-explicit',
+    'backend/z-explicit',
+    'backend/ch2',
+    'backend/ch10',
+    'backend/non-finite',
+    'backend/ignored-sentinel',
+    'backend/guide-a',
+    'backend/guide-z',
+    'backend/reference',
   ]);
 });
 
 test('orders collator-equivalent posts deterministically', () => {
-  const uppercase = post('network/A', { title: 'ARTICLE', order: 1 });
-  const lowercase = post('network/a', { title: 'article', order: 1 });
+  const uppercase = post('backend/A', { title: 'ARTICLE', order: 1, category: 'backend' });
+  const lowercase = post('backend/a', { title: 'article', order: 1, category: 'backend' });
 
   assert.ok(compareSeriesPosts(uppercase, lowercase) < 0);
   assert.ok(compareSeriesPosts(lowercase, uppercase) > 0);
@@ -102,8 +102,8 @@ test('orders collator-equivalent posts deterministically', () => {
 });
 
 test('orders numbered directory group ids naturally', () => {
-  const group10 = post('network/group10/ch01');
-  const group2 = post('network/group2/ch01');
+  const group10 = post('backend/group10/ch01', { category: 'backend' });
+  const group2 = post('backend/group2/ch01', { category: 'backend' });
 
   const navigation = buildSeriesNavigation([group10, group2], group10);
 
@@ -111,23 +111,23 @@ test('orders numbered directory group ids naturally', () => {
 });
 
 test('previous and next posts follow the visible sidebar sequence', () => {
-  const root = post('network/start');
-  const groupA = post('network/a/ch01');
-  const groupB = post('network/b/ch01');
+  const root = post('backend/start', { category: 'backend' });
+  const groupA = post('backend/a/ch01', { category: 'backend' });
+  const groupB = post('backend/b/ch01', { category: 'backend' });
 
   const navigation = buildSeriesNavigation([groupB, root, groupA], groupA);
 
   assert.deepEqual(slugs(navigation.sequence), [
-    'network/start',
-    'network/a/ch01',
-    'network/b/ch01',
+    'backend/start',
+    'backend/a/ch01',
+    'backend/b/ch01',
   ]);
   assert.equal(navigation.previousPost, root);
   assert.equal(navigation.nextPost, groupB);
 });
 
 test('handles singleton categories and current posts missing from the supplied index', () => {
-  const onlyPost = post('network/only');
+  const onlyPost = post('backend/only', { category: 'backend' });
   const singleton = buildSeriesNavigation([onlyPost], onlyPost);
 
   assert.equal(singleton.currentIndex, 0);
@@ -138,7 +138,7 @@ test('handles singleton categories and current posts missing from the supplied i
 
   const missing = buildSeriesNavigation(
     [onlyPost, post('go/intro')],
-    post('network/not-indexed'),
+    post('backend/not-indexed', { category: 'backend' }),
   );
 
   assert.equal(missing.currentIndex, -1);

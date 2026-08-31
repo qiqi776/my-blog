@@ -10,10 +10,10 @@ import MiniPlayer from './MiniPlayer';
 // Resets scroll for each incoming page. Lives inside the keyed subtree so it
 // runs when the new page mounts — not when the outgoing one starts to exit,
 // which would yank the view while it's still fading.
-function ScrollReset() {
+function ScrollReset({ pathname }) {
   useLayoutEffect(() => {
     window.scrollTo({ top: 0 });
-  }, []);
+  }, [pathname]);
   return null;
 }
 
@@ -22,6 +22,7 @@ function ScrollReset() {
 // animate between routes.
 export default function Layout() {
   const location = useLocation();
+  const isPostRoute = location.pathname.startsWith('/posts/');
 
   // Snapshot of the active route's element. AnimatePresence keeps the previous
   // snapshot mounted while it exits, so the outgoing page keeps rendering its
@@ -44,19 +45,26 @@ export default function Layout() {
 
       <Navbar />
 
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.main
-          key={location.pathname}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-          transition={{ duration: 0.22, ease: 'easeInOut' }}
-          className="flex-1"
-        >
-          <ScrollReset />
+      {isPostRoute ? (
+        <main className="flex-1">
+          <ScrollReset pathname={location.pathname} />
           {outlet}
-        </motion.main>
-      </AnimatePresence>
+        </main>
+      ) : (
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.main
+            key={location.pathname}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.22, ease: 'easeInOut' }}
+            className="flex-1"
+          >
+            <ScrollReset pathname={location.pathname} />
+            {outlet}
+          </motion.main>
+        </AnimatePresence>
+      )}
 
       <Footer />
 

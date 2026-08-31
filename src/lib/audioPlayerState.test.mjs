@@ -18,7 +18,7 @@ test('route navigation preserves track and playback intent', () => {
 
   const afterNavigation = audioPlayerReducer(playing, {
     type: 'route-changed',
-    pathname: '/posts/DistributedSystem/raft',
+    pathname: '/posts/backend/DistributedSystem/raft',
   });
 
   assert.equal(afterNavigation.idx, 0);

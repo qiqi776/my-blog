@@ -8,14 +8,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Search } from "lucide-react";
 import { AVATAR, DISPLAY_NAME, GITHUB } from "../../data/profile";
-
-const navLinks = [
-  { to: "/", label: "首页" },
-  { to: "/posts", label: "文章" },
-  { to: "/archive", label: "归档" },
-  { to: "/about", label: "关于" },
-];
-
+import { buildPrimaryNavItems, getPostSectionByCategory } from "../../data/navigation";
+import { getPostBySlug, posts } from "../../data/posts";
 
 // Scroll-direction thresholds.
 //
@@ -36,6 +30,20 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const navItems = buildPrimaryNavItems(posts);
+
+  const activeSectionId = (() => {
+    if (location.pathname.startsWith("/posts/")) {
+      const slug = location.pathname
+        .replace(/^\/posts\//, "")
+        .split("/")
+        .map((segment) => decodeURIComponent(segment))
+        .join("/");
+      return getPostSectionByCategory(getPostBySlug(slug)?.category)?.id ?? null;
+    }
+
+    return null;
+  })();
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -135,16 +143,17 @@ export default function Navbar() {
 
             {/* Nav — absolutely centered, so side widths never shift it */}
             <nav className="hidden md:flex items-center gap-0.5 absolute left-1/2 -translate-x-1/2">
-              {navLinks.map(({ to, label }) => {
-                const isActive =
-                  to === "/"
+              {navItems.map(({ to, label, sectionId }) => {
+                const isActive = sectionId
+                  ? activeSectionId === sectionId
+                  : to === "/"
                     ? location.pathname === "/"
                     : location.pathname.startsWith(to);
                 return (
                   <Link
                     key={to}
                     to={to}
-                    className={`relative px-5 py-2 rounded-full text-base md:text-lg font-medium transition-colors duration-200 ${
+                    className={`relative px-3 py-1.5 rounded-full text-sm md:text-base font-medium transition-colors duration-200 ${
                       isActive
                         ? "text-pink-700"
                         : "text-[var(--text-muted)] hover:text-[var(--text-body)]"
@@ -224,15 +233,17 @@ export default function Navbar() {
                 <SearchBox mobile onSubmitted={() => setMenuOpen(false)} />
               </div>
 
-              {navLinks.map(({ to, label }) => {
-                const isActive =
-                  to === "/"
+              {navItems.map(({ to, label, sectionId }) => {
+                const isActive = sectionId
+                  ? activeSectionId === sectionId
+                  : to === "/"
                     ? location.pathname === "/"
                     : location.pathname.startsWith(to);
                 return (
                   <Link
                     key={to}
                     to={to}
+                    onClick={() => setMenuOpen(false)}
                     className={`block px-4 py-2.5 rounded-xl text-base md:text-lg font-medium transition-all duration-200 ${
                       isActive
                         ? "bg-pink-200/60 text-pink-700"
@@ -253,15 +264,15 @@ export default function Navbar() {
 }
 
 // ── Global search ────────────────────────────────────────────
-// URL (`/posts?q=…`) is the source of truth, so results are shareable
-// and the back button works. Typing filters live on the list page;
+// URL (`/archive?q=…`) is the source of truth, so results are shareable
+// and the back button works. Typing filters live on the archive page;
 // from any other page, Enter navigates there.
 function SearchBox({ mobile = false, onSubmitted }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const urlQuery = searchParams.get("q") ?? "";
-  const onPostsPage = location.pathname === "/posts";
+  const onArchivePage = location.pathname === "/archive";
   const [value, setValue] = useState(urlQuery);
 
   // Re-sync when the URL changes from outside (back button, category click)
@@ -271,15 +282,15 @@ function SearchBox({ mobile = false, onSubmitted }) {
 
   const push = (q, replace) => {
     const trimmed = q.trim();
-    navigate(trimmed ? `/posts?q=${encodeURIComponent(trimmed)}` : "/posts", {
-      replace,
-    });
+    const next = new URLSearchParams();
+    if (trimmed) next.set("q", trimmed);
+    navigate(next.toString() ? `/archive?${next.toString()}` : "/archive", { replace });
   };
 
   const handleChange = (e) => {
     const v = e.target.value;
     setValue(v);
-    if (onPostsPage) push(v, true); // replace: don't stack a history entry per keystroke
+    if (onArchivePage) push(v, true); // replace: don't stack a history entry per keystroke
   };
 
   const handleSubmit = (e) => {
@@ -290,7 +301,7 @@ function SearchBox({ mobile = false, onSubmitted }) {
 
   const clear = () => {
     setValue("");
-    if (onPostsPage) push("", true);
+    if (onArchivePage) push("", true);
   };
 
   return (

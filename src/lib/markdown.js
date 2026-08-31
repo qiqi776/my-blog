@@ -25,17 +25,12 @@ export function parseFrontmatter(raw) {
 
 // Top-level directory → display category
 export const CATEGORY_MAP = {
-  go:                 { label: 'Go 语言',     color: 'bg-cyan-200/60 text-cyan-800' },
-  SystemDesign:       { label: '系统设计',    color: 'bg-orange-200/60 text-orange-800' },
-  DistributedSystem:  { label: '分布式系统',  color: 'bg-red-200/60 text-red-800' },
-  cmu15445:           { label: 'CMU 15-445', color: 'bg-yellow-200/60 text-yellow-800' },
-  ddia:               { label: 'DDIA',        color: 'bg-indigo-200/60 text-indigo-800' },
-  os:                 { label: '操作系统',    color: 'bg-green-200/60 text-green-800' },
-  network:            { label: '网络',         color: 'bg-blue-200/60 text-blue-800' },
-  mysql:              { label: 'MySQL',        color: 'bg-pink-200/60 text-pink-800' },
-  webfront:           { label: '前端',         color: 'bg-violet-200/60 text-violet-800' },
-  middleware:         { label: '中间件',       color: 'bg-amber-200/60 text-amber-800' },
-  projects:           { label: '项目实践',    color: 'bg-teal-200/60 text-teal-800' },
+  go:        { label: 'Go',      color: 'bg-cyan-200/60 text-cyan-800' },
+  frontend:  { label: '前端',     color: 'bg-violet-200/60 text-violet-800' },
+  backend:   { label: '后端',     color: 'bg-orange-200/60 text-orange-800' },
+  agent:     { label: 'agent',    color: 'bg-amber-200/60 text-amber-800' },
+  projects:  { label: '项目',     color: 'bg-teal-200/60 text-teal-800' },
+  exam408:   { label: '考研408', color: 'bg-red-200/60 text-red-800' },
 };
 
 export function categoryFromPath(filePath) {
