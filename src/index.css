@@ -426,6 +426,7 @@
     .prose-content h2 { font-size: 2rem; }
     .prose-content h3 { font-size: 1.4rem; }
     .prose-content h4 { font-size: 1.15rem; }
+    .article-rail { font-size: 1.15rem; line-height: 1.85; }
   }
 
   .prose-content p { margin-bottom: 1em; }
@@ -1108,6 +1109,9 @@
     top: 6rem;
     min-width: 0;
     align-self: start;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.75;
   }
 
   .article-rail__panel {
@@ -1135,7 +1139,8 @@
   .article-rail__header strong {
     min-width: 0;
     color: var(--text-heading);
-    font-size: 1rem;
+    font-size: inherit;
+    font-weight: 700;
     line-height: 1.4;
     overflow-wrap: anywhere;
   }
@@ -1143,12 +1148,12 @@
   .article-rail__eyebrow {
     grid-column: 1 / -1;
     color: var(--text-muted);
-    font-size: 0.72rem;
+    font-size: inherit;
   }
 
   .article-rail__position {
     color: var(--text-muted);
-    font-size: 0.78rem;
+    font-size: inherit;
     font-variant-numeric: tabular-nums;
   }
 
@@ -1190,7 +1195,7 @@
     color: var(--text-secondary);
     cursor: pointer;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: inherit;
     font-weight: 700;
     line-height: 1.35;
     text-align: left;
@@ -1215,7 +1220,7 @@
     padding: 0.55rem 0.65rem;
     border-radius: 0.375rem;
     color: var(--text-muted);
-    font-size: 0.82rem;
+    font-size: inherit;
     line-height: 1.45;
     transition-property: color, transform;
     transition-duration: 150ms;
@@ -1262,7 +1267,7 @@
     padding: 0.55rem 0.65rem;
     border-radius: 0.375rem;
     color: var(--text-muted);
-    font-size: 0.78rem;
+    font-size: inherit;
     line-height: 1.45;
     transition-property: background-color, color;
     transition-duration: 150ms;
@@ -1361,6 +1366,14 @@
     overflow-y: visible;
   }
 
+  .navigation-sheet__body .series-navigation,
+  .navigation-sheet__body .page-outline__links,
+  .navigation-sheet__body .navigation-sheet__summary {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+
   .navigation-sheet__summary {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -1370,7 +1383,7 @@
     margin: 0 0.35rem 0.35rem;
     padding: 0.55rem 0.65rem;
     color: var(--text-secondary);
-    font-size: 0.88rem;
+    font-size: inherit;
   }
 
   .navigation-sheet__summary span {
