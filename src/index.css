@@ -1476,12 +1476,12 @@
 
   @media (min-width: 1440px) {
     .post-layout {
-      grid-template-columns: 15rem minmax(0, 52.5rem) 12.5rem;
+      grid-template-columns: 15rem minmax(0, 51.25rem) 14.25rem;
       column-gap: 2rem;
     }
 
     .post-article {
-      max-width: 52.5rem;
+      max-width: 51.25rem;
     }
 
     .page-outline {
